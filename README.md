@@ -1,6 +1,6 @@
 # HL-Algorithm-Study
 
-<img src="https://github.com/user-attachments/assets/8154cf75-121e-4b3e-b636-71f7f24a1ae8" width="500px"/>
+<img src="https://github.com/user-attachments/assets/4caa7396-e4e9-4618-8394-58b51588f844" width="500px"/>
 
 <br>
 <br>
