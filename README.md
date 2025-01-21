@@ -19,7 +19,7 @@
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/Sungmin214">
+      <a href="https://github.com/hskhsmm">
         <img src="https://avatars.githubusercontent.com/hskhsmm" width="140px;" alt="hskhsmm"/>
       </a>
     </td>
