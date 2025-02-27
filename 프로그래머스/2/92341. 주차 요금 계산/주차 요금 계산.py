@@ -1,50 +1,51 @@
-from collections import defaultdict
+#fees = [180,5000,10,600]
+#records = ["05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"]
 import math
+#전처리 Key : 5961 Value : 시간  / 입출력
+#{'5961' : ['05:34' , 'IN']}
+# 동일한 Key 값에서 Out이 나오면 시간 계산하고 기본 시간이 넘었는지 아닌지에 따라 단위 요금 처리 
 
-def solution(fees, records):
-    park_record = defaultdict(list)  # 차량별 입·출차 기록 저장
-    result = []
 
+#전처리 코드
+def solution(fees,records):
+    #시간 / 자동차 번호 / 입출력 정보 
+    #전처리 담을 dict
+    car_records = {}
+    total_time = {}
     for record in records:
-        Time, Car, Park = record.split()
-        hour, min = map(int, Time.split(':'))
-        time = hour * 60 + min
-        park_record[Car].append((time, Park))
-
-    total_times = {}
-
-    for car, records in park_record.items():
-        total_time = 0
-        in_time = None
-        
-        for car_time, status in records:
+        time, car_number , INOUT = record.split()
+        #시간 전처리
+        hour, minute = map(int,time.split(':'))
+        time_split = (hour * 60)+ minute
+        #만약에 car_number 이 car_records 에 없으면 -> 새로운 차
+        if car_number not in car_records:
+            car_records[car_number] = []
+        car_records[car_number].append((time_split,INOUT))
+    #print(car_records)
+    #dict INOUT이 Out인지 봐야해 
+    #car keys 
+    for car_number,log in car_records.items():
+        last_in = None
+        total_time[car_number] = 0 
+        for time,status in log:
             if status == 'IN':
-                in_time = car_time
-            elif status == 'OUT' and in_time is not None:
-                total_time += car_time - in_time
-                in_time = None 
-        
-        # 🚨 **출차 기록이 없는 경우 → 23:59(1439분) 출차 처리**
-        if in_time is not None:
-            total_time += (23 * 60 + 59) - in_time
-        
-        total_times[car] = total_time
-
-    # 🚗 **요금 계산**
-    for car in sorted(total_times.keys()):  # 차량 번호 오름차순 정렬
-        total_time = total_times[car]
-        
-        if total_time <= fees[0]:  # 기본 시간 이하라면 기본 요금
-            result.append(fees[1])
-        else:  # 초과 시간 요금 계산
-            extra_time = total_time - fees[0]
-            extra_fee = math.ceil(extra_time / fees[2]) * fees[3]  # ⬅ 올림 적용
-            result.append(fees[1] + extra_fee)
-
-    return result  # 🔥 `return`을 추가
-
-# ✅ 실행
-fees = [180, 5000, 10, 600]
-records = ["05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT",
-           "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"]
-print(solution(fees, records))  # 🔍 결과 확인
+                last_in = time
+            elif status == 'OUT' and last_in is not None:
+                total_time[car_number] += time - last_in
+                last_in = None
+        if last_in is not None:
+            #23시 59분 
+            last_time = (23 * 60) + 59
+            total_time[car_number] += last_time - last_in
+    #print(total_time)
+    basic_time , basic_fee , time_min, time_fee = fees
+    result = []
+    for car_number in sorted(total_time.keys()):
+        if total_time[car_number] <= basic_time:
+            result.append(basic_fee)
+        else:
+            extra_time = total_time[car_number] - basic_time
+            extra_fee = math.ceil(extra_time / time_min) * time_fee            
+            result.append(basic_fee+ extra_fee)
+    return result
+#print(solution(records,fees))
